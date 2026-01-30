@@ -18,9 +18,9 @@ export default function Header() {
                         <Image
                             src="/images/logo-2.png"
                             alt="Global News 24 Logo"
-                            width={200}
-                            height={60}
-                            className="h-16 w-auto object-contain"
+                            width={240}
+                            height={80}
+                            className="h-10 md:h-14 lg:h-16 w-auto object-contain"
                             priority
                         />
                     </Link>
