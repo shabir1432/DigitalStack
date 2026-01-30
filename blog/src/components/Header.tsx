@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -11,9 +13,16 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
+                    {/* Logo */}
                     <Link href="/" className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-[#1a4d3e]">Trend</span>
-                        <span className="text-2xl font-bold text-gray-900">Pulse.</span>
+                        <Image
+                            src="/images/logo.png"
+                            alt="TrendPulse Logo"
+                            width={150}
+                            height={40}
+                            className="h-10 w-auto object-contain"
+                            priority
+                        />
                     </Link>
 
                     {/* Desktop Navigation */}
