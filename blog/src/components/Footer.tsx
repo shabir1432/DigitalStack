@@ -8,8 +8,8 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
-                            <span className="text-2xl font-bold text-[#1a4d3e]">Trend</span>
-                            <span className="text-2xl font-bold text-gray-900">Pulse.</span>
+                            <span className="text-2xl font-bold text-[#1a4d3e]">Global</span>
+                            <span className="text-2xl font-bold text-gray-900">News 24.</span>
                         </Link>
                         <p className="text-gray-500 text-sm mb-6">
                             Your source for the latest trending topics and stories from around the world.
@@ -75,7 +75,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-gray-500 text-sm">
-                        © {new Date().getFullYear()} TrendPulse. All rights reserved.
+                        © {new Date().getFullYear()} Global News 24. All rights reserved.
                     </p>
                     <div className="flex items-center gap-6">
                         <span className="text-gray-500 text-sm hover:text-[#1a4d3e] cursor-pointer transition-colors">Privacy Policy</span>

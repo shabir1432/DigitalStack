@@ -17,10 +17,10 @@ export default function Header() {
                     <Link href="/" className="flex items-center gap-2">
                         <Image
                             src="/images/logo.png"
-                            alt="TrendPulse Logo"
-                            width={150}
-                            height={40}
-                            className="h-10 w-auto object-contain"
+                            alt="Global News 24 Logo"
+                            width={200}
+                            height={60}
+                            className="h-16 w-auto object-contain"
                             priority
                         />
                     </Link>

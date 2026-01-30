@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { getSortedPostsData } from '@/lib/posts';
 
 export const metadata = {
-  title: 'TrendPulse - Blog & Magazine',
+  title: 'Global News 24 - Blog & Magazine',
   description: 'Discover the latest trending topics and stories from around the world.',
 };
 
@@ -125,9 +125,9 @@ export default function Home() {
                 {/* Author Card */}
                 <div className="bg-gray-50 rounded-lg p-6 mb-8 text-center">
                   <div className="w-20 h-20 mx-auto rounded-full bg-[#1a4d3e] flex items-center justify-center text-white text-2xl font-bold mb-4">
-                    TP
+                    GN
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-1">TrendPulse</h3>
+                  <h3 className="font-bold text-gray-900 mb-1">Global News 24</h3>
                   <p className="text-sm text-gray-500 mb-4">Editorial Team</p>
                   <p className="text-sm text-gray-600">
                     Bringing you the latest trending stories from around the world.

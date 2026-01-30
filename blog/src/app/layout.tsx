@@ -13,19 +13,19 @@ const inter = Inter({
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
 
 export const metadata: Metadata = {
-  title: "TrendPulse | Trending News",
+  title: "Global News 24 | Trending News",
   description: "Discover the latest trending topics and stories from around the world. Fresh content updated every hour.",
   keywords: ["trending", "news", "viral", "stories", "latest"],
   authors: [{ name: "Editorial Team" }],
   openGraph: {
-    title: "TrendPulse | Trending News",
+    title: "Global News 24 | Trending News",
     description: "Discover the latest trending topics and stories from around the world.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "TrendPulse | Trending News",
+    title: "Global News 24 | Trending News",
     description: "Discover the latest trending topics and stories from around the world.",
   },
   robots: {

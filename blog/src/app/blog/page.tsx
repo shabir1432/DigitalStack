@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import { getSortedPostsData } from '@/lib/posts';
 
 export const metadata = {
-    title: 'All Articles - TrendPulse',
+    title: 'All Articles - Global News 24',
     description: 'Browse all trending articles and stories',
 };
 

@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: PageProps) {
     try {
         const post = await getPostData(slug);
         return {
-            title: `${post?.title || 'Post'} - TrendPulse`,
+            title: `${post?.title || 'Post'} - Global News 24`,
             description: post?.description,
         };
     } catch {
-        return { title: 'Post Not Found - TrendPulse' };
+        return { title: 'Post Not Found - Global News 24' };
     }
 }
 
