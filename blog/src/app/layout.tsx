@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 // Get GA ID from environment variable
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-FHQHV4VFGY';
 
 export const metadata: Metadata = {
   title: "Global News 24 | Trending News",
