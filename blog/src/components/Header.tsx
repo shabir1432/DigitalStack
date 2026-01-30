@@ -16,7 +16,7 @@ export default function Header() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2">
                         <Image
-                            src="/images/logo.png"
+                            src="/images/logo-2.png"
                             alt="Global News 24 Logo"
                             width={200}
                             height={60}
