@@ -24,7 +24,7 @@ keywords:
 category: "technology"
 featured: true
 draft: false
-image: "/images/posts/sri-lanka-vs-england-predictions/image-1.jpg"
+image: "https://images.pexels.com/photos/33404650/pexels-photo-33404650.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
 ---
 
 ## Sri Lanka vs England: 5 HUGE Predictions REVEALED!
@@ -47,7 +47,7 @@ Whether you're a die-hard cricket fan or just curious about the buzz, the **Sri 
 Let's start with the basics: the historical showdown. The **sri lanka vs england** head-to-head record is a testament to their fierce rivalry. Across all formats – Tests, ODIs, and T20s – both teams have had their moments of glory. England has historically held an edge in Test matches, while the ODI and T20 formats have seen more balanced competition. Understanding this history is crucial for predicting future clashes. What is **sri lanka vs england** if not a battle of strategic prowess and raw talent?
 
 
-![Buddhist temple with giant Buddha statue in Unawatuna, Southern Sri Lanka, a popular spiritual site.](/images/posts/sri-lanka-vs-england-predictions/image-1.jpg)
+![Buddhist temple with giant Buddha statue in Unawatuna, Southern Sri Lanka, a popular spiritual site.](https://images.pexels.com/photos/33404650/pexels-photo-33404650.jpeg?auto=compress&cs=tinysrgb&h=650&w=940)
 *Photo by [Ruwan  Lakmal](https://www.pexels.com/@ruwan-lakmal-326724272) on Pexels*
 
 

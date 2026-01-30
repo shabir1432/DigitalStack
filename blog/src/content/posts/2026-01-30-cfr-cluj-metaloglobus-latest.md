@@ -55,7 +55,7 @@ In this post, we'll dive deep into everything you need to know about this highly
 Get ready to be informed, entertained, and maybe even a little surprised. Let's get started!
 
 
-![Futuristic office skyscraper with glass facade and steel columns under a clear blue sky.](/images/posts/cfr-cluj-metaloglobus-latest/image-1.jpg)
+![Futuristic office skyscraper with glass facade and steel columns under a clear blue sky.](https://images.pexels.com/photos/1804197/pexels-photo-1804197.jpeg?auto=compress&cs=tinysrgb&h=650&w=940)
 *Photo by [Christian Fohrer](https://www.pexels.com/@christian-fohrer-894172) on Pexels*
 
 
@@ -181,6 +181,6 @@ Now it's your turn! What are your predictions for the match? Share your thoughts
 *   **Where is CFR Cluj - Metaloglobus being played?** The match is likely being played at CFR Cluj's home stadium or a neutral venue.
 
 
-![A crystal prism reflects colorful rainbow patterns, captured with vibrant detail and clarity.](/images/posts/cfr-cluj-metaloglobus-latest/image-3.jpg)
+![A crystal prism reflects colorful rainbow patterns, captured with vibrant detail and clarity.](https://images.pexels.com/photos/4198862/pexels-photo-4198862.jpeg?auto=compress&cs=tinysrgb&h=650&w=940)
 *Photo by [Magda Ehlers](https://www.pexels.com/@magda-ehlers-pexels) on Pexels*
 
