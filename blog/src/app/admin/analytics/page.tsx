@@ -21,6 +21,7 @@ interface PostAnalytics {
 
 interface EditingPost {
     fileName: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     frontmatter: any;
     content: string;
 }
@@ -71,7 +72,9 @@ export default function AnalyticsDashboard() {
             const postsRes = await fetch('/api/posts');
             const postsData = await postsRes.json();
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const postsWithFiles = (data.posts || []).map((p: PostAnalytics) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const match = postsData.posts?.find((pp: any) => pp.slug === p.slug);
                 return { ...p, fileName: match?.fileName };
             });
@@ -301,8 +304,8 @@ export default function AnalyticsDashboard() {
                     <button
                         onClick={() => setActiveTab('analytics')}
                         className={`px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'analytics'
-                                ? 'bg-violet-500 text-white'
-                                : 'bg-white/5 text-zinc-400 hover:text-white'
+                            ? 'bg-violet-500 text-white'
+                            : 'bg-white/5 text-zinc-400 hover:text-white'
                             }`}
                     >
                         📈 Analytics
@@ -310,8 +313,8 @@ export default function AnalyticsDashboard() {
                     <button
                         onClick={() => setActiveTab('manage')}
                         className={`px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'manage'
-                                ? 'bg-violet-500 text-white'
-                                : 'bg-white/5 text-zinc-400 hover:text-white'
+                            ? 'bg-violet-500 text-white'
+                            : 'bg-white/5 text-zinc-400 hover:text-white'
                             }`}
                     >
                         📝 Manage Posts
