@@ -4,7 +4,14 @@ import { format } from 'date-fns';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ViewTracker from '@/components/ViewTracker';
+import BlogSchema from '@/components/BlogSchema';
 import { getPostData, getSortedPostsData } from '@/lib/posts';
+
+// Revalidate pages every hour to pick up new content
+export const revalidate = 3600;
+
+// Allow new blog posts not generated at build time to be rendered on-demand
+export const dynamicParams = true;
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -17,11 +24,36 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps) {
     const { slug } = await params;
+    const baseUrl = 'https://global-news-24.vercel.app';
+
     try {
         const post = await getPostData(slug);
+        const imageId = Math.abs(slug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000) + 100;
+        const postImage = post?.image || `https://picsum.photos/seed/${imageId}/1200/600`;
+
         return {
             title: `${post?.title || 'Post'} - Global News 24`,
             description: post?.description,
+            keywords: post?.keywords?.join(', '),
+            alternates: {
+                canonical: `${baseUrl}/blog/${slug}`,
+            },
+            openGraph: {
+                title: post?.title,
+                description: post?.description,
+                url: `${baseUrl}/blog/${slug}`,
+                siteName: 'Global News 24',
+                images: [{ url: postImage, width: 1200, height: 630, alt: post?.title }],
+                type: 'article',
+                publishedTime: post?.date,
+                authors: [post?.author || 'Editorial Team'],
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title: post?.title,
+                description: post?.description,
+                images: [postImage],
+            },
         };
     } catch {
         return { title: 'Post Not Found - Global News 24' };
@@ -59,6 +91,16 @@ export default async function BlogPost({ params }: PageProps) {
         <div className="min-h-screen bg-white">
             <Header />
             <ViewTracker slug={slug} />
+            <BlogSchema
+                title={post.title}
+                description={post.description || ''}
+                slug={slug}
+                date={post.date}
+                author={post.author || 'Editorial Team'}
+                image={post.image || postImage}
+                category={post.category}
+                keywords={post.keywords}
+            />
 
             <main className="pt-20">
                 {/* Hero Image */}
