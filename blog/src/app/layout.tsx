@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   description: "Discover the latest trending topics and stories from around the world. Fresh content updated every hour.",
   keywords: ["trending", "news", "viral", "stories", "latest"],
   authors: [{ name: "Editorial Team" }],
+  verification: {
+    google: "IQzaA6_A0GhI1FzqVJp8ZyOJr2Zr-Y-qnaDyU2k5Jkw",
+  },
   openGraph: {
     title: "Global News 24 | Trending News",
     description: "Discover the latest trending topics and stories from around the world.",
