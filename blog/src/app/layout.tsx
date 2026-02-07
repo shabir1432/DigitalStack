@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://digitalstack.vercel.app'),
   title: "DigitalStack - Future Tech & Operations",
   description: "Exploring the frontier of Digital Operations, Smart Automation, and Future Tech.",
+  verification: {
+    google: "IQzaA6_A0GhI1FzqVJp8ZyOJr2Zr-Y-qnaDyU2k5Jkw",
+  },
 };
 
 export default function RootLayout({
