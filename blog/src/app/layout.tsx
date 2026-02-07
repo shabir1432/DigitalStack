@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://digitalstack.vercel.app'),
   title: "DigitalStack - Future Tech & Operations",
-  description: "Your definitive source for digital operations, future tech, and smart living.",
+  description: "Exploring the frontier of Digital Operations, Smart Automation, and Future Tech.",
 };
 
 export default function RootLayout({

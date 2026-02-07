@@ -96,7 +96,7 @@ NICHES = [
 # Legacy single niche support (will use first niche as default)
 BLOG_NICHE = os.getenv("BLOG_NICHE", NICHES[0]["name"])
 BLOG_NAME = os.getenv("BLOG_NAME", "DigitalStack")
-BLOG_URL = os.getenv("BLOG_URL", "http://localhost:3000")
+BLOG_URL = os.getenv("BLOG_URL", "https://digitalstack.vercel.app")
 
 # Content Settings
 MIN_WORD_COUNT = int(os.getenv("MIN_WORD_COUNT", "2500")) # Increased for Authority
