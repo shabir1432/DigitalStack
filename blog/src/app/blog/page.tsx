@@ -4,115 +4,42 @@ import Footer from '@/components/Footer';
 import { getSortedPostsData } from '@/lib/posts';
 
 export const metadata = {
-    title: 'All Articles - Global News 24',
-    description: 'Browse all trending articles and stories',
+    title: 'All Articles - Tech Authority Blog',
+    description: 'Browse our complete collection of articles on Technology, Digital Trends, and Future Innovations.',
 };
 
-export default function BlogPage() {
-    const posts = getSortedPostsData();
-    const categories = [...new Set(posts.map(p => p.category || 'General'))];
-    const featuredPost = posts[0];
-    const otherPosts = posts.slice(1);
+export default function BlogIndex() {
+    const allPosts = getSortedPostsData();
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen">
             <Header />
 
-            <main className="pt-20">
-                {/* Page Header */}
-                <section className="px-6 py-12 bg-gray-50">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="text-center">
-                            <span className="subtitle">Blog</span>
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-4">
-                                Latest Articles
-                            </h1>
-                            <p className="text-gray-500 max-w-lg mx-auto">
-                                Explore our collection of {posts.length} trending articles from around the world.
-                            </p>
-                        </div>
+            <main className="pt-24 pb-16 px-6">
+                <div className="max-w-7xl mx-auto">
+                    {/* Page Header */}
+                    <div className="mb-12 text-center">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                            All Articles
+                        </h1>
+                        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                            Explore our latest insights, tutorials, and deep dives into the world of future technology and digital innovation.
+                        </p>
                     </div>
-                </section>
 
-                {/* Categories */}
-                <section className="px-6 py-6 border-b border-gray-100">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                            <button className="px-5 py-2 rounded-full text-sm font-medium bg-[#1a4d3e] text-white">
-                                All
-                            </button>
-                            {categories.slice(0, 6).map((cat) => (
-                                <button
-                                    key={cat}
-                                    className="px-5 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors whitespace-nowrap"
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* Featured Article */}
-                {featuredPost && (
-                    <section className="px-6 py-12">
-                        <div className="max-w-7xl mx-auto">
-                            <Link href={`/blog/${featuredPost.slug}`} className="group grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                                {/* Image */}
-                                <div className="relative h-[350px] rounded-lg overflow-hidden">
-                                    <img
-                                        src={featuredPost.image}
-                                        alt={featuredPost.title}
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
-                                </div>
-
-                                {/* Content */}
-                                <div>
-                                    <span className="badge mb-4">{featuredPost.category || 'Featured'}</span>
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-4 group-hover:text-[#1a4d3e] transition-colors">
-                                        {featuredPost.title}
-                                    </h2>
-                                    <p className="text-gray-500 mb-6 line-clamp-3">
-                                        {featuredPost.description || 'Discover the latest updates on this trending topic that everyone is talking about.'}
-                                    </p>
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-10 h-10 rounded-full bg-[#1a4d3e] flex items-center justify-center text-white font-bold">
-                                            {(featuredPost.author || 'E')[0]}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900 text-sm">{featuredPost.author || 'Editorial'}</p>
-                                            <p className="text-gray-400 text-xs">{featuredPost.date} · 5 min read</p>
-                                        </div>
-                                    </div>
-                                    <span className="read-more">
-                                        Read Article
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </Link>
-                        </div>
-                    </section>
-                )}
-
-                {/* Articles Grid */}
-                <section className="px-6 py-12 bg-gray-50">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-8 section-title">All Articles</h2>
-
-                        {otherPosts.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {otherPosts.map((post, index) => (
-                                    <ArticleCard key={post.slug} post={post} />
-                                ))}
+                    {/* Articles Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {allPosts.length > 0 ? (
+                            allPosts.map((post) => (
+                                <ArticleCard key={post.slug} post={post} />
+                            ))
+                        ) : (
+                            <div className="col-span-full">
+                                <EmptyArticles />
                             </div>
-                        ) : posts.length === 0 ? (
-                            <EmptyState />
-                        ) : null}
+                        )}
                     </div>
-                </section>
+                </div>
             </main>
 
             <Footer />
@@ -120,54 +47,53 @@ export default function BlogPage() {
     );
 }
 
+// Reuse Article Card Component
 function ArticleCard({ post }: { post: any }) {
     return (
-        <Link href={`/blog/${post.slug}`} className="group card overflow-hidden">
+        <Link href={`/blog/${post.slug}`} className="card group flex flex-col overflow-hidden rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all h-full">
             {/* Image */}
-            <div className="relative h-48 overflow-hidden">
+            <div className="h-48 overflow-hidden relative">
                 <img
                     src={post.image}
                     alt={post.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute top-4 left-4">
-                    <span className="badge">{post.category || 'News'}</span>
+                <div className="absolute top-3 left-3">
+                    <span className="px-2 py-1 bg-black/60 backdrop-blur-md text-white/90 text-xs font-bold rounded">
+                        {post.category || 'Tech'}
+                    </span>
                 </div>
             </div>
 
             {/* Content */}
-            <div className="p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#1a4d3e] transition-colors line-clamp-2">
+            <div className="p-5 flex flex-col flex-1">
+                <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                    <span>{post.date}</span>
+                    <span>•</span>
+                    <span>{post.readTime || '5 min read'}</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors leading-snug">
                     {post.title}
                 </h3>
-                <p className="text-gray-500 text-sm line-clamp-2 mb-4">
-                    {post.description || 'Discover the latest updates on this trending topic.'}
+                <p className="text-gray-400 text-sm line-clamp-3 mb-4 leading-relaxed flex-1">
+                    {post.description || 'Read full article...'}
                 </p>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
-                            {(post.author || 'E')[0]}
-                        </div>
-                        <span className="text-xs text-gray-500">{post.author || 'Editorial'}</span>
-                    </div>
-                    <span className="text-xs text-gray-400">{post.date}</span>
+                <div className="mt-auto pt-4 border-t border-white/5">
+                    <span className="text-indigo-400 font-medium text-sm inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Read Article <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </span>
                 </div>
             </div>
         </Link>
     );
 }
 
-function EmptyState() {
+function EmptyArticles() {
     return (
-        <div className="bg-white rounded-lg border border-gray-200 p-16 text-center">
-            <span className="text-6xl mb-6 block">📝</span>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">No Articles Yet</h3>
-            <p className="text-gray-500 max-w-md mx-auto mb-6">
-                Run the content generator to create trending articles.
-            </p>
-            <code className="inline-block px-4 py-2 bg-gray-100 rounded-lg text-[#1a4d3e] font-mono text-sm">
-                python main.py --trending --publish
-            </code>
+        <div className="bg-white/5 rounded-2xl p-12 text-center border border-white/10">
+            <span className="text-4xl mb-4 block text-gray-600">📝</span>
+            <h3 className="font-bold text-white mb-2">No Articles Yet</h3>
+            <p className="text-gray-500 text-sm">Check back soon for new content.</p>
         </div>
     );
 }

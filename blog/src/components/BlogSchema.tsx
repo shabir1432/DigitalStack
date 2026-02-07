@@ -1,4 +1,4 @@
-'use client';
+import Head from 'next/head';
 
 interface BlogSchemaProps {
     title: string;
@@ -11,21 +11,13 @@ interface BlogSchemaProps {
     keywords?: string[];
 }
 
-export default function BlogSchema({
-    title,
-    description,
-    slug,
-    date,
-    author,
-    image,
-    category,
-    keywords,
-}: BlogSchemaProps) {
-    const baseUrl = 'https://global-news-24.vercel.app';
+export default function BlogSchema({ title, description, slug, date, author, image, category, keywords }: BlogSchemaProps) {
+    const baseUrl = 'https://global-news-24.vercel.app'; // Update this with actual URL
+    const url = `${baseUrl}/blog/${slug}`;
 
-    const jsonLd = {
+    const schema = {
         '@context': 'https://schema.org',
-        '@type': 'NewsArticle',
+        '@type': 'BlogPosting',
         headline: title,
         description: description,
         image: image,
@@ -33,29 +25,27 @@ export default function BlogSchema({
         dateModified: date,
         author: {
             '@type': 'Person',
-            name: author || 'Editorial Team',
+            name: author,
         },
         publisher: {
             '@type': 'Organization',
-            name: 'Global News 24',
+            name: 'AI Authority Blog',
             logo: {
                 '@type': 'ImageObject',
-                url: `${baseUrl}/logo.png`,
+                url: `${baseUrl}/header-logo.jpeg`, // Placeholder
             },
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `${baseUrl}/blog/${slug}`,
+            '@id': url,
         },
-        keywords: keywords?.join(', ') || category || 'news, trending',
-        articleSection: category || 'News',
-        url: `${baseUrl}/blog/${slug}`,
+        keywords: keywords?.join(', ') || category || 'Tech',
     };
 
     return (
         <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
     );
 }

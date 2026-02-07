@@ -36,7 +36,7 @@ class TrendAgent(BaseAgent):
     
     async def run(
         self,
-        niche: Optional[str] = None,
+        niche: Dict[str, Any],
         use_global: bool = True,
         count: int = 10
     ) -> Dict[str, Any]:
@@ -45,15 +45,13 @@ class TrendAgent(BaseAgent):
         volume/competition scoring.
         
         Args:
-            niche: Blog niche (uses config if not provided)
+            niche: Niche configuration dictionary
             use_global: If True, fetch from multiple countries
             count: Number of trends to analyze
-            
-        Returns:
-            Selected topic with full analysis
         """
         self.log_start()
-        niche = niche or BLOG_NICHE
+        niche_name = niche.get("name", "Technology")
+
         
         try:
             # Step 1: Get global trends OR regional trends
@@ -73,8 +71,8 @@ class TrendAgent(BaseAgent):
             self.log(f"Found {len(all_trends)} unique trending topics")
             
             # Step 2: Filter by niche relevance
-            self.log(f"Filtering for {niche} niche...")
-            niche_keywords = NICHE_KEYWORDS.get(niche.lower(), NICHE_KEYWORDS['technology'])
+            self.log(f"Filtering for {niche_name} niche...")
+            niche_keywords = NICHE_KEYWORDS.get(niche_name.lower(), NICHE_KEYWORDS['technology'])
             niche_trends = self.trends_service.filter_by_niche(all_trends, niche_keywords)
             
             # If no niche matches, use AI to find relevant ones from top global trends

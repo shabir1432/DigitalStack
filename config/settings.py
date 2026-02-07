@@ -71,19 +71,50 @@ TOGETHER_MAX_TOKENS = 8192
 # ============================================
 # Blog Configuration
 # ============================================
-BLOG_NICHE = os.getenv("BLOG_NICHE", "technology")
-BLOG_NAME = os.getenv("BLOG_NAME", "My AI Blog")
+# ============================================
+# Blog Configuration
+# ============================================
+# Focused Authority Niches
+NICHES = [
+    {
+        "name": "Digital Operations",
+        "keywords": ["smart automation", "enterprise efficiency", "workflow optimization", "system integration"],
+        "category": "Technology"
+    },
+    {
+        "name": "Professional Remote Work Setup",
+        "keywords": ["ergonomic home office", "mac studio accessories", "thunderbolt docks", "remote work gear"],
+        "category": "Technology"
+    },
+    {
+        "name": "Sustainable Smart Home",
+        "keywords": ["smart thermostat energy savings", "solar generators", "home energy monitor", "eco smart home"],
+        "category": "Technology"
+    }
+]
+
+# Legacy single niche support (will use first niche as default)
+BLOG_NICHE = os.getenv("BLOG_NICHE", NICHES[0]["name"])
+BLOG_NAME = os.getenv("BLOG_NAME", "DigitalStack")
 BLOG_URL = os.getenv("BLOG_URL", "http://localhost:3000")
 
 # Content Settings
-MIN_WORD_COUNT = int(os.getenv("MIN_WORD_COUNT", "2000"))
-MAX_WORD_COUNT = int(os.getenv("MAX_WORD_COUNT", "3000"))
-IMAGES_PER_POST = int(os.getenv("IMAGES_PER_POST", "5"))
+MIN_WORD_COUNT = int(os.getenv("MIN_WORD_COUNT", "2500")) # Increased for Authority
+MAX_WORD_COUNT = int(os.getenv("MAX_WORD_COUNT", "4000"))
+IMAGES_PER_POST = int(os.getenv("IMAGES_PER_POST", "8")) # More visuals
 VIDEOS_PER_POST = int(os.getenv("VIDEOS_PER_POST", "2"))
 
 # Publishing Settings
 AUTO_PUBLISH = os.getenv("AUTO_PUBLISH", "false").lower() == "true"
 REVIEW_BEFORE_PUBLISH = os.getenv("REVIEW_BEFORE_PUBLISH", "true").lower() == "true"
+
+# ============================================
+# Email Newsletter Configuration
+# ============================================
+EMAIL_SENDER_USER = os.getenv("EMAIL_SENDER_USER", "")
+EMAIL_SENDER_PASSWORD = os.getenv("EMAIL_SENDER_PASSWORD", "")
+EMAIL_SMTP_SERVER = os.getenv("EMAIL_SMTP_SERVER", "smtp.gmail.com")
+EMAIL_SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "587"))
 
 # Trend Settings
 TREND_REGION = os.getenv("TREND_REGION", "united_states")
@@ -91,9 +122,15 @@ TREND_CATEGORY = os.getenv("TREND_CATEGORY", "")  # Empty for all categories
 
 # Global Trend Analysis
 USE_GLOBAL_TRENDS = os.getenv("USE_GLOBAL_TRENDS", "true").lower() == "true"
-TREND_FETCH_DELAY = float(os.getenv("TREND_FETCH_DELAY", "1.5"))  # Seconds between API calls
-COMPETITION_THRESHOLD = int(os.getenv("COMPETITION_THRESHOLD", "50"))  # Prefer topics below this
-MIN_TREND_SCORE = int(os.getenv("MIN_TREND_SCORE", "20"))  # Minimum score to consider
+TREND_FETCH_DELAY = float(os.getenv("TREND_FETCH_DELAY", "2.0"))  # Slower to avoid rate limits
+COMPETITION_THRESHOLD = int(os.getenv("COMPETITION_THRESHOLD", "50"))
+MIN_TREND_SCORE = int(os.getenv("MIN_TREND_SCORE", "20"))
+
+# ============================================
+# SEO Service Configuration
+# ============================================
+ENABLE_SERP_ANALYSIS = True
+SERP_MAX_RESULTS = 5
 
 # ============================================
 # Validation

@@ -11,6 +11,7 @@ import shutil
 from agents.base_agent import BaseAgent
 from config.settings import BLOG_DIR, POSTS_DIR, IMAGES_DIR, AUTO_PUBLISH, REVIEW_BEFORE_PUBLISH
 from services.image_service import get_image_service
+from services.email_service import EmailService
 
 
 class PublisherAgent(BaseAgent):
@@ -22,6 +23,7 @@ class PublisherAgent(BaseAgent):
             description="Publishing blog posts to the website"
         )
         self.image_service = get_image_service()
+        self.email_service = EmailService()
         
         # Blog content directory (for Next.js)
         self.blog_posts_dir = BLOG_DIR / "src" / "content" / "posts"
@@ -78,6 +80,19 @@ class PublisherAgent(BaseAgent):
                 "word_count": blog_post.get("word_count", 0)
             }
             
+            # Step 5: Send Email Notification
+            if published_path:
+                self.log("Sending email notifications...")
+                title = blog_post.get("title", "")
+                excerpt = blog_post.get("frontmatter", {}).get("excerpt", "")
+                url = self._generate_post_url(blog_post)
+                
+                # Check for frontmatter excerpt if top-level is missing/empty
+                if not excerpt:
+                     excerpt = blog_post.get("frontmatter", {}).get("excerpt", "Read our latest article on Tech Authority.")
+
+                self.email_service.send_new_post_notification(title, excerpt, url)
+            
             self.log_complete()
             return result
             
@@ -98,7 +113,8 @@ class PublisherAgent(BaseAgent):
         
         # Add date prefix
         date_prefix = datetime.now().strftime("%Y-%m-%d")
-        filename = f"{date_prefix}-{slug}.md"
+        # Removing date prefix from filename for cleaner URLs
+        filename = f"{slug}.md"
         
         # Save to posts directory
         POSTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -108,7 +124,7 @@ class PublisherAgent(BaseAgent):
             f.write(blog_post.get("full_post", ""))
         
         # Also save metadata as JSON
-        meta_path = POSTS_DIR / f"{date_prefix}-{slug}.json"
+        meta_path = POSTS_DIR / f"{slug}.json"
         meta_data = {
             "title": blog_post.get("title", ""),
             "date": date_prefix,
@@ -125,14 +141,30 @@ class PublisherAgent(BaseAgent):
         self.log(f"Saved draft to: {post_path}")
         return post_path
     
+    def _sanitize_slug(self, slug: str) -> str:
+        """Sanitize slug to be safe for filenames and URLs"""
+        import re
+        # Lowercase
+        slug = slug.lower()
+        # Remove special chars (keep only alphanumeric and spaces/hyphens)
+        slug = re.sub(r'[^a-z0-9\s-]', '', slug)
+        # Replace spaces with hyphens
+        slug = slug.replace(" ", "-")
+        # Collapse multiple hyphens
+        slug = re.sub(r'-+', '-', slug)
+        # Strip leading/trailing hyphens
+        return slug.strip("-")
+
     async def _process_images(self, blog_post: Dict[str, Any]) -> Dict[str, str]:
         """Download images and return mapping of URL to local path"""
         
         local_images = {}
         images = blog_post.get("images", [])
         
-        # Create images directory
-        slug = blog_post.get("frontmatter", {}).get("slug", "post")
+        # Create images directory (using sanitized slug)
+        raw_slug = blog_post.get("frontmatter", {}).get("slug", "post")
+        slug = self._sanitize_slug(raw_slug)
+        
         post_images_dir = IMAGES_DIR / slug
         post_images_dir.mkdir(parents=True, exist_ok=True)
         
@@ -172,18 +204,50 @@ class PublisherAgent(BaseAgent):
         self.blog_posts_dir.mkdir(parents=True, exist_ok=True)
         
         # Create filename
-        slug = blog_post.get("frontmatter", {}).get("slug", "post")
+        raw_slug = blog_post.get("frontmatter", {}).get("slug", "post")
+        slug = self._sanitize_slug(raw_slug)
+        
         date_prefix = datetime.now().strftime("%Y-%m-%d")
-        filename = f"{date_prefix}-{slug}.md"
+        date_prefix = datetime.now().strftime("%Y-%m-%d")
+        # Removing date prefix for cleaner URLs
+        filename = f"{slug}.md"
         
         post_path = self.blog_posts_dir / filename
         
-        # Write the post
+        # Create frontmatter
+        frontmatter = blog_post.get("frontmatter", {})
+        # Ensure we have essential fields
+        # Always use sanitized slug for consistency
+        frontmatter["slug"] = slug
+        if "date" not in frontmatter:
+            frontmatter["date"] = date_prefix
+            
+        # Add featured image if available
+        images = blog_post.get("images", [])
+        if images and "image" not in frontmatter:
+             # Assume the first image is the featured image
+             # The paths in the content have already been updated to local paths
+             # We reconstruct the path based on the standard naming convention used in _process_images
+             frontmatter["image"] = f"/images/posts/{slug}/image-1.jpg"
+            
+        frontmatter_str = "---\n"
+        for k, v in frontmatter.items():
+            if v is None:
+                continue
+            if isinstance(v, str):
+                 # Escape quotes if needed
+                 safe_val = v.replace('"', '\\"')
+                 frontmatter_str += f'{k}: "{safe_val}"\n'
+            else:
+                 frontmatter_str += f'{k}: {v}\n'
+        frontmatter_str += "---\n\n"
+        
+        # Write the post with frontmatter
         with open(post_path, "w", encoding="utf-8") as f:
-            f.write(content)
+            f.write(frontmatter_str + content)
         
         # Copy images to blog public folder
-        slug = blog_post.get("frontmatter", {}).get("slug", "post")
+        # Use sanitized slug for both source and target to match _process_images
         source_images = IMAGES_DIR / slug
         target_images = self.blog_images_dir / slug
         
@@ -198,11 +262,12 @@ class PublisherAgent(BaseAgent):
     def _generate_post_url(self, blog_post: Dict[str, Any]) -> str:
         """Generate the URL for the published post"""
         
-        slug = blog_post.get("frontmatter", {}).get("slug", "post")
+        raw_slug = blog_post.get("frontmatter", {}).get("slug", "post")
+        slug = self._sanitize_slug(raw_slug)
         date = datetime.now().strftime("%Y/%m/%d")
         
         from config.settings import BLOG_URL
-        return f"{BLOG_URL}/blog/{date}/{slug}"
+        return f"{BLOG_URL}/blog/{slug}"
     
     async def publish_manually(self, post_path: Path) -> Dict[str, Any]:
         """Manually publish a saved draft"""

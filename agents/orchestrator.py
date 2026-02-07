@@ -1,9 +1,9 @@
 """
 Orchestrator
-Coordinates all agents to produce a complete blog post
+Coordinates the Authority Blog System
 """
 import asyncio
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
@@ -13,257 +13,133 @@ from agents.trend_agent import TrendAgent
 from agents.keyword_agent import KeywordAgent
 from agents.writer_agent import WriterAgent
 from agents.publisher_agent import PublisherAgent
-from config.settings import BLOG_NICHE, validate_config
+from services.seo_service import get_seo_service
+from config.settings import NICHES, validate_config
 
 console = Console()
 
-
 class Orchestrator:
-    """Main orchestrator that coordinates all agents"""
+    """Main orchestrator that coordinates all agents for Authority Blogging"""
     
     def __init__(self):
         self.trend_agent = TrendAgent()
         self.keyword_agent = KeywordAgent()
         self.writer_agent = WriterAgent()
         self.publisher_agent = PublisherAgent()
+        self.seo_service = get_seo_service()
     
     async def run(
         self,
-        topic: Optional[str] = None,
-        niche: Optional[str] = None,
-        auto_publish: bool = False,
-        use_any_trending: bool = False
+        auto_publish: bool = False
     ) -> Dict[str, Any]:
         """
-        Run the complete blog post generation pipeline
-        
-        Args:
-            topic: Optional specific topic (otherwise fetched from trends)
-            niche: Blog niche (uses config if not provided)
-            auto_publish: Whether to publish automatically
-            use_any_trending: If True, write about ANY trending topic (no niche filter)
-            
-        Returns:
-            Complete result with all agent outputs
+        Run the daily authority blog cycle (3 posts: 1 per niche)
         """
         start_time = datetime.now()
         
-        # If use_any_trending, don't filter by niche
-        if use_any_trending:
-            niche = None
-            display_niche = "🔥 ANY TRENDING TOPIC"
-        else:
-            niche = niche or BLOG_NICHE
-            display_niche = niche
-        
-        # Display header
         console.print(Panel(
-            f"""[bold cyan]Agentic AI Blog System[/bold cyan]
+            f"""[bold cyan]Authority Blog System (SEO Edition)[/bold cyan]
             
-[yellow]Mode:[/yellow] {'🔥 Trending Mode (Any Topic)' if use_any_trending else 'Niche Mode'}
-[yellow]Niche:[/yellow] {display_niche}
-[yellow]Topic:[/yellow] {topic or 'Auto-detect from global trends'}
+[yellow]Strategy:[/yellow] 3 High-Quality Posts/Day
+[yellow]Niches:[/yellow] {", ".join([n['name'] for n in NICHES])}
 [yellow]Auto-publish:[/yellow] {auto_publish}
 [yellow]Started:[/yellow] {start_time.strftime('%Y-%m-%d %H:%M:%S')}""",
-            title="🚀 Starting Blog Generation",
+            title="🚀 Starting Daily Cycle",
             border_style="green"
         ))
+        
+        results = []
         
         try:
-            # Validate configuration
             validate_config()
             
-            result = {
-                "started_at": start_time.isoformat(),
-                "niche": niche or "any",
-                "mode": "trending" if use_any_trending else "niche",
-                "stages": {}
-            }
-            
-            # Stage 1: Trend Research (skip if topic provided)
-            if topic:
-                console.print("\n[cyan]📌 Using provided topic, skipping trend research[/cyan]")
-                trend_result = {
-                    "selected_topic": topic,
-                    "analysis": {"suggested_title": topic},
-                    "niche": niche or "any"
-                }
-            else:
-                console.print("\n[cyan]🔍 Stage 1: Global Trend Research[/cyan]")
+            # Loop through each niche and generate a post
+            for niche in NICHES:
+                console.print(f"\n[magenta]==========================================[/magenta]")
+                console.print(f"[bold magenta]🎲 Starting Niche: {niche['name']}[/bold magenta]")
+                console.print(f"[magenta]==========================================[/magenta]\n")
                 
-                if use_any_trending:
-                    # Get TOP trending topic globally - no niche filter
-                    trend_result = await self._get_any_trending_topic()
-                else:
-                    trend_result = await self.trend_agent.run(niche=niche)
-                
-                topic = trend_result["selected_topic"]
+                try:
+                    result = await self._process_niche(niche, auto_publish)
+                    results.append(result)
+                    
+                    # 6. Traffic Acceleration Tips (Post-Processing)
+                    self._display_traffic_tips(result)
+                    
+                except Exception as e:
+                    console.print(f"[red]❌ Error processing niche {niche['name']}: {e}[/red]")
             
-            result["stages"]["trend_research"] = trend_result
-            result["topic"] = topic
-            console.print(f"[green]✓ Selected topic: {topic}[/green]\n")
-            
-            # Stage 2: Keyword Analysis
-            console.print("[cyan]🏷️ Stage 2: Keyword Analysis[/cyan]")
-            keyword_result = await self.keyword_agent.run(
-                topic=topic,
-                niche=niche or "general",
-                analysis=trend_result.get("analysis")
-            )
-            
-            # Format keywords for writer
-            keywords_for_writer = self.keyword_agent.format_for_writer(keyword_result)
-            result["stages"]["keyword_analysis"] = keyword_result
-            console.print(f"[green]✓ Generated {len(keywords_for_writer.get('hashtags', []))} hashtags[/green]\n")
-            
-            # Stage 3: Content Writing
-            console.print("[cyan]✍️ Stage 3: Content Writing[/cyan]")
-            writer_result = await self.writer_agent.run(
-                topic=topic,
-                keywords=keywords_for_writer,
-                niche=niche or "general"
-            )
-            result["stages"]["content_writing"] = {
-                "title": writer_result.get("title"),
-                "word_count": writer_result.get("word_count"),
-                "images_count": len(writer_result.get("images", [])),
-                "videos_count": len(writer_result.get("videos", []))
-            }
-            console.print(f"[green]✓ Written {writer_result.get('word_count', 0)} words[/green]\n")
-            
-            # Stage 4: Publishing
-            console.print("[cyan]📤 Stage 4: Publishing[/cyan]")
-            publish_result = await self.publisher_agent.run(
-                blog_post=writer_result,
-                auto_publish=auto_publish
-            )
-            result["stages"]["publishing"] = publish_result
-            console.print(f"[green]✓ Post saved successfully[/green]\n")
-            
-            # Calculate duration
-            end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
-            result["completed_at"] = end_time.isoformat()
-            result["duration_seconds"] = duration
-            
-            # Display summary
-            self._display_summary(result, writer_result, publish_result)
-            
-            return result
+            return {"results": results}
             
         except Exception as e:
-            console.print(f"\n[red]❌ Error: {e}[/red]")
+            console.print(f"\n[red]❌ Critical Error: {e}[/red]")
             raise
-    
-    async def _get_any_trending_topic(self) -> Dict[str, Any]:
-        """
-        Get the TOP trending topic globally without any niche filter.
-        This picks the #1 most popular topic across all countries.
-        """
-        from services.google_trends import get_trends_service
-        from services.competition_analyzer import get_competition_analyzer
-        from services.topic_scorer import get_topic_scorer
+
+    async def _process_niche(self, niche: Dict[str, Any], auto_publish: bool) -> Dict[str, Any]:
+        """Process a single niche through the SEO workflow"""
         
-        trends_service = get_trends_service()
-        competition_analyzer = get_competition_analyzer()
-        topic_scorer = get_topic_scorer()
+        # 1. Trend Research & Selection
+        console.print(f"[cyan]🔍 Stage 1: Trend Research ({niche['name']})[/cyan]")
+        trend_result = await self.trend_agent.run(niche=niche, count=5)
+        topic = trend_result["selected_topic"]
         
-        # Get global trends (no niche filter)
-        console.print("[magenta]🔥 Fetching TOP trending topics globally (no niche filter)...[/magenta]")
-        global_trends = trends_service.get_global_trends()
+        # 2. SEO Analysis (Intent & Competitor Gaps)
+        console.print(f"[cyan]🧠 Stage 2: SEO Analysis & Intent[/cyan]")
+        intent_analysis = self.seo_service.analyze_search_intent(topic)
+        console.print(f"   Intent: [yellow]{intent_analysis.get('intent', 'unknown')}[/yellow]")
+        console.print(f"   Difficulty: [yellow]{intent_analysis.get('difficulty', 'medium')}[/yellow]")
         
-        if not global_trends:
-            raise ValueError("No trending topics found")
+        # 3. Ranking Blueprint Generation
+        console.print(f"[cyan]📐 Stage 3: Generatin Ranking Blueprint[/cyan]")
+        blueprint = self.seo_service.generate_ranking_blueprint(topic)
+        console.print(f"   Target Word Count: [green]{blueprint.get('target_word_count')}[/green]")
+        console.print(f"   H1: [green]{blueprint.get('h1')}[/green]")
+
+        # 4. Keyword Enhancement
+        console.print(f"[cyan]🏷️ Stage 4: Keyword Strategy[/cyan]")
+        keyword_result = await self.keyword_agent.run(
+            topic=topic,
+            niche=niche['name'],
+            analysis=trend_result.get("analysis")
+        )
+        # Merge Blueprint LSI keywords
+        keyword_result['lsi'] = list(set(keyword_result.get('lsi', []) + blueprint.get('lsi_keywords', [])))
         
-        # Score top 10 trends
-        scored_topics = []
-        for trend in global_trends[:10]:
-            competition = competition_analyzer.analyze_competition(
-                trend['topic'],
-                trend_data=trend
-            )
-            scored = topic_scorer.score_topic(
-                topic=trend['topic'],
-                regions=trend.get('regions', []),
-                competition_data=competition,
-                trend_data=trend
-            )
-            scored_topics.append(scored)
+        # 5. Authority Writing
+        console.print(f"[cyan]✍️ Stage 5: Authority Writing (E-E-A-T)[/cyan]")
+        writer_result = await self.writer_agent.run(
+            topic=topic,
+            keywords=keyword_result,
+            niche=niche['name'],
+            blueprint=blueprint
+        )
         
-        # Display rankings
-        topic_scorer.display_rankings(scored_topics)
-        
-        # Get best topic
-        best = topic_scorer.get_best_topic(scored_topics)
-        
-        if not best:
-            best = scored_topics[0]
-        
-        console.print(f"[bold green]🏆 Selected: {best['topic']} (Score: {best['final_score']:.1f})[/bold green]")
+        # 6. Publishing
+        console.print(f"[cyan]📤 Stage 6: Publishing[/cyan]")
+        publish_result = await self.publisher_agent.run(
+            blog_post=writer_result,
+            auto_publish=auto_publish
+        )
         
         return {
-            "selected_topic": best['topic'],
-            "original_trend": best['topic'],
-            "score": best['final_score'],
-            "priority": best['priority'],
-            "competition_level": best['metrics']['competition_level'],
-            "regions": best['metrics'].get('regions', []),
-            "regions_count": best['metrics']['regions_count'],
-            "analysis": {
-                "suggested_title": best['topic'],
-                "reason": f"Top trending topic in {best['metrics']['regions_count']} countries",
-                "content_type": "news"
-            },
-            "niche": "trending"
+            "niche": niche['name'],
+            "topic": topic,
+            "blueprint": blueprint,
+            "writer_result": writer_result,
+            "publish_result": publish_result
         }
-    
-    def _display_summary(
-        self,
-        result: Dict[str, Any],
-        writer_result: Dict[str, Any],
-        publish_result: Dict[str, Any]
-    ):
-        """Display a summary of the completed pipeline"""
-        
-        duration = result.get("duration_seconds", 0)
-        minutes = int(duration // 60)
-        seconds = int(duration % 60)
-        
-        mode_text = "🔥 Trending" if result.get("mode") == "trending" else f"📁 {result.get('niche', 'N/A')}"
-        
-        summary = f"""[bold green]✅ Blog Post Generated Successfully![/bold green]
 
-[yellow]Mode:[/yellow] {mode_text}
-[yellow]Topic:[/yellow] {result.get('topic', 'N/A')}
-[yellow]Title:[/yellow] {writer_result.get('title', 'N/A')}
-[yellow]Word Count:[/yellow] {writer_result.get('word_count', 0)}
-[yellow]Images:[/yellow] {len(writer_result.get('images', []))}
-[yellow]Videos:[/yellow] {len(writer_result.get('videos', []))}
+    def _display_traffic_tips(self, result: Dict[str, Any]):
+        """Show manual tips for the user to boost this post"""
+        topic = result['topic']
+        tips = f"""
+[bold green]🚀 Traffic Acceleration Tips for "{topic}"[/bold green]
+1. [bold]Internal Linking:[/bold] Search your blog for "{result['blueprint'].get('lsi_keywords', ['tags'])[0]}" and link to this new post.
+2. [bold]Social:[/bold] Tweet the "Key Takeaways" section as a thread.
+3. [bold]Email:[/bold] Send the "Why this matters now" angle to your list.
+"""
+        console.print(Panel(tips, title="📢 Promote This Post", border_style="blue"))
 
-[yellow]Draft Path:[/yellow] {publish_result.get('draft_path', 'N/A')}
-[yellow]Published:[/yellow] {'Yes' if publish_result.get('auto_published') else 'No (saved as draft)'}
-{f"[yellow]Post URL:[/yellow] {publish_result.get('post_url')}" if publish_result.get('post_url') else ''}
-
-[yellow]Duration:[/yellow] {minutes}m {seconds}s"""
-
-        console.print(Panel(
-            summary,
-            title="📊 Summary",
-            border_style="green"
-        ))
-
-
-async def run_orchestrator(
-    topic: Optional[str] = None,
-    niche: Optional[str] = None,
-    auto_publish: bool = False,
-    use_any_trending: bool = False
-) -> Dict[str, Any]:
-    """Convenience function to run the orchestrator"""
+async def run_orchestrator(auto_publish: bool = False) -> Dict[str, Any]:
     orchestrator = Orchestrator()
-    return await orchestrator.run(
-        topic=topic,
-        niche=niche,
-        auto_publish=auto_publish,
-        use_any_trending=use_any_trending
-    )
+    return await orchestrator.run(auto_publish=auto_publish)

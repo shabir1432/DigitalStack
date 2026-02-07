@@ -34,11 +34,13 @@ export default function ViewTracker({ slug }: ViewTrackerProps) {
             const timeSpent = Math.round((Date.now() - startTime.current) / 1000);
 
             // Use sendBeacon for reliable tracking on page exit
-            navigator.sendBeacon('/api/views', JSON.stringify({
-                slug,
-                visitorId,
-                timeSpent,
-            }));
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon('/api/views', JSON.stringify({
+                    slug,
+                    visitorId,
+                    timeSpent,
+                }));
+            }
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
