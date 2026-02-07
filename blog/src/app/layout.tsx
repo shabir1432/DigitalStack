@@ -17,9 +17,10 @@ export const metadata: Metadata = {
   title: "DigitalStack - Future Tech & Operations",
   description: "Exploring the frontier of Digital Operations, Smart Automation, and Future Tech.",
   verification: {
-    google: "IQzaA6_A0GhI1FzqVJp8ZyOJr2Zr-Y-qnaDyU2k5Jkw",
+    google: "tqYLR9sO6MlSkxcu_wX6oU7Tzi_yIQV-jgkopRqC7Dw",
   },
 };
+
 
 export default function RootLayout({
   children,
